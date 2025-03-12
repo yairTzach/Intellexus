@@ -8,8 +8,8 @@ const Graph = () => {
   // Fetch Users & Friendships
   const fetchData = async () => {
     try {
-      const usersRes = await axios.get("http://localhost:3000/users");
-      const friendshipsRes = await axios.get("http://localhost:3000/friendships");
+      const usersRes = await axios.get("/users");
+      const friendshipsRes = await axios.get("/friendships");
 
       const users = usersRes.data.users;
       const friendships = friendshipsRes.data.friendships;

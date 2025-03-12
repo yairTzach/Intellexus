@@ -2,10 +2,16 @@ require('dotenv').config();
 const express = require('express');
 const neo4j = require('neo4j-driver');
 const cors = require('cors');
+const path = require('path')
 
 const app = express();
+const http = require('http').createServer(app)
 app.use(express.json());
 app.use(cors());
+
+
+app.use(express.static(path.resolve(__dirname, 'public')))
+
 
 // Connect to Neo4j
 const driver = neo4j.driver(
@@ -15,6 +21,7 @@ const driver = neo4j.driver(
 
 // Add a New User
 app.post('/users', async (req, res) => {
+    console.log(driver);
     const { name } = req.body;
     const session = driver.session();
     try {
@@ -74,6 +81,7 @@ app.get('/users', async (req, res) => {
     try {
         const result = await session.run("MATCH (u:User) RETURN u.name AS name");
         const users = result.records.map(record => ({ name: record.get("name") }));
+        console.log(users);
         res.json({ users });
     } catch (error) {
         console.error("Error fetching users:", error);
@@ -120,5 +128,9 @@ app.get('/users/:name/friends', async (req, res) => {
     }
 });
 
+app.get('/**', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'index.html'))
+})
+
 // Start the Server
-app.listen(3000, () => console.log('Server running on http://localhost:3000'));
+http.listen(3000, () => console.log('Server running'));
